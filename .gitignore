@@ -34,3 +34,9 @@ example/tests/outputs/
 apps/frontend/.playwright*
 sandbox/
 .venv/
+
+# Bright Minds: catálogo gerado por `nao sync` e variáveis preenchidas
+bright-minds/context/databases/
+bright-minds/context/repos/
+.env.dokploy
+bright-minds/context/.meta/

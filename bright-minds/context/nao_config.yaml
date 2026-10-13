@@ -1,0 +1,19 @@
+project_name: bright-minds-knowledge-base
+databases:
+- name: bright-minds-crm
+  type: postgres
+  host: "{{ env('CRM_DB_HOST') }}"
+  port: {{ env('CRM_DB_PORT') }}
+  database: "{{ env('CRM_DB_NAME') }}"
+  user: "{{ env('CRM_DB_USER') }}"
+  password: "{{ env('CRM_DB_PASSWORD') }}"
+  schema_name: cerebro
+  templates:
+  - columns
+  include: []
+  exclude: []
+repos: []
+notion: null
+obsidian: null
+llm: null
+slack: null

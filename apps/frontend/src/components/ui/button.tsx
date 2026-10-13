@@ -13,9 +13,9 @@ const buttonVariants = cva(
 		variants: {
 			variant: {
 				default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-				'primary-gradient': 'text-[oklch(1_0_0)] bg-brand-gradient hover:bg-brand-gradient-hover',
+				'primary-gradient': 'text-[oklch(0.156_0.013_277.4)] bg-brand-gradient hover:bg-brand-gradient-hover',
 				'primary-gradient-border':
-					'border border-transparent text-[oklch(1_0_0)] bg-brand-gradient-border hover:bg-brand-gradient-border-hover',
+					'border border-transparent text-[oklch(0.156_0.013_277.4)] bg-brand-gradient-border hover:bg-brand-gradient-border-hover',
 				destructive:
 					'bg-destructive/10 text-destructive hover:bg-destructive/15 dark:bg-destructive/60 dark:text-white',
 				'destructive-soft':

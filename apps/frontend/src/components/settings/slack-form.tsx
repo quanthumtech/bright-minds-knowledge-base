@@ -156,7 +156,7 @@ export function SlackForm({ webhookUrl, hasProjectConfig, onSubmit, onCancel, is
 							className={cn(
 								'px-3 py-1 text-xs rounded-sm transition-colors',
 								transportMode === 'webhook'
-									? 'bg-brand-gradient text-[oklch(1_0_0)]'
+									? 'bg-brand-gradient text-[oklch(0.156_0.013_277.4)]'
 									: 'text-muted-foreground hover:text-foreground',
 							)}
 						>
@@ -168,7 +168,7 @@ export function SlackForm({ webhookUrl, hasProjectConfig, onSubmit, onCancel, is
 							className={cn(
 								'px-3 py-1 text-xs rounded-sm transition-colors',
 								transportMode === 'socket'
-									? 'bg-brand-gradient text-[oklch(1_0_0)]'
+									? 'bg-brand-gradient text-[oklch(0.156_0.013_277.4)]'
 									: 'text-muted-foreground hover:text-foreground',
 							)}
 						>

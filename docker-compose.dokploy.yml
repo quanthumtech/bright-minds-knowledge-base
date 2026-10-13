@@ -1,0 +1,73 @@
+# Bright Minds Knowledge Base (o "Cérebro"): nao + Postgres do histórico de chat, para o DOKPLOY.
+#   Dokploy: Create Service → Compose → Git → branch main → Compose Path: ./docker-compose.dokploy.yml
+#   Environment: copie .env.dokploy.example e preencha. Passo a passo: bright-minds/README.md
+#
+# - Sem `ports`: o domínio do Dokploy (Traefik) aponta para o serviço `nao`, porta 5005.
+# - O banco do CRM (Supabase auto-hospedado) NÃO é exposto na internet: o `nao` entra na rede Docker
+#   do Supabase (SUPABASE_NETWORK) e conecta no container do banco pelo nome interno, com o usuário
+#   somente leitura `cerebro_ro` (bright-minds/sql/cerebro-readonly.sql).
+# - Variáveis obrigatórias ausentes falham AQUI, no deploy, com mensagem clara.
+services:
+    postgres:
+        image: postgres:16-alpine
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: nao
+            POSTGRES_PASSWORD: ${NAO_DB_PASSWORD:?defina NAO_DB_PASSWORD (openssl rand -hex 16)}
+            POSTGRES_DB: nao
+        volumes:
+            - nao_postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U nao -d nao']
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    nao:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: bright-minds-knowledge-base
+        restart: unless-stopped
+        entrypoint: ['bash', '/bm/entrypoint.sh']
+        environment:
+            MODE: prod
+            SERVER_PORT: 5005
+            BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?gere com openssl rand -base64 32}
+            BETTER_AUTH_URL: ${BETTER_AUTH_URL:?defina a URL publica, ex. https://cerebro.exemplo.com.br}
+            DB_URI: postgres://nao:${NAO_DB_PASSWORD}@postgres:5432/nao
+            POSTHOG_DISABLED: 'true'
+            ENABLE_USER_SIGNUP: ${ENABLE_USER_SIGNUP:-false}
+            NAO_CONTEXT_SOURCE: local
+            NAO_DEFAULT_PROJECT_PATH: /app/context
+            ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+            OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+            CRM_DB_HOST: ${CRM_DB_HOST:?defina CRM_DB_HOST (nome do container do banco do Supabase)}
+            CRM_DB_PORT: ${CRM_DB_PORT:-5432}
+            CRM_DB_NAME: ${CRM_DB_NAME:-postgres}
+            CRM_DB_USER: ${CRM_DB_USER:-cerebro_ro}
+            CRM_DB_PASSWORD: ${CRM_DB_PASSWORD:?defina CRM_DB_PASSWORD (senha do cerebro_ro)}
+        volumes:
+            - ./bright-minds/entrypoint.sh:/bm/entrypoint.sh:ro
+            - ./bright-minds/context:/app/context-src:ro
+            - nao_context:/app/context
+        expose:
+            - '5005'
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - default
+            - dokploy-network
+            - supabase
+
+volumes:
+    nao_postgres_data:
+    nao_context:
+
+networks:
+    dokploy-network:
+        external: true
+    supabase:
+        external: true
+        name: ${SUPABASE_NETWORK:?defina SUPABASE_NETWORK (docker network ls | grep supabase)}

@@ -103,7 +103,7 @@ const settingsNavGroups: NavGroup[] = [
 		label: 'Observability',
 		items: [
 			{
-				label: 'Chat with nao data',
+				label: 'Chat with Bright Minds data',
 				to: '/',
 				search: { admin: true },
 				visible: ({ isAdmin, isContextAdmin }) => isAdmin || isContextAdmin,
