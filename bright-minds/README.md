@@ -54,6 +54,7 @@ Use como `SUPABASE_NETWORK` a rede do stack do Supabase (ex.: `bright-minds-supa
 > Se o stack do Supabase for recriado, o nome do container e da rede mudam: atualize `CRM_DB_HOST`/`SUPABASE_NETWORK`, rode de novo o passo 2 (senha nova) e faça Deploy.
 
 ### 4. [DOKPLOY] Criar o serviço
+> Tem que ser do tipo **Compose**, não *Application*: o Cérebro precisa do Postgres do histórico, do contexto montado e da rede do Supabase, e o Dockerfile sozinho não entrega isso.
 1. **Create Service → Compose** → Provider **Git** (o repositório do passo 1), branch `main`, **Compose Path** `./docker-compose.dokploy.yml`.
 2. **Environment**: cole o conteúdo de `.env.dokploy.example` preenchido (`BETTER_AUTH_SECRET` com `openssl rand -base64 32`, `NAO_DB_PASSWORD` com `openssl rand -hex 16`, a chave do LLM e os valores do passo 2/3).
 3. **Domains**: serviço `nao`, porta `5005`, HTTPS (Let's Encrypt). `BETTER_AUTH_URL` precisa ser exatamente essa URL.
@@ -61,7 +62,7 @@ Use como `SUPABASE_NETWORK` a rede do stack do Supabase (ex.: `bright-minds-supa
 
 ### 5. Primeiro acesso
 Abra a URL e crie o primeiro usuário (vira administrador). O cadastro livre fica desligado (`ENABLE_USER_SIGNUP=false`); convide os demais pelas configurações.
-Sem chave de LLM no Environment o chat não responde: preencha `ANTHROPIC_API_KEY` ou `OPENAI_API_KEY` e faça Redeploy.
+Sem chave de LLM no Environment o chat não responde: preencha `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` ou `GEMINI_API_KEY` e faça Redeploy.
 
 ### 6. [SERVIDOR] Sincronizar o catálogo
 ```bash
