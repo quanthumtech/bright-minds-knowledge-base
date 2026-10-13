@@ -40,3 +40,9 @@ bright-minds/context/databases/
 bright-minds/context/repos/
 .env.dokploy
 bright-minds/context/.meta/
+
+# Cérebro local: perfis com segredos, estado de execução e venv
+bright-minds/local/.env.*
+!bright-minds/local/.env.*.example
+bright-minds/local/run-*/
+bright-minds/local/.venv/

@@ -72,6 +72,24 @@ Gera, dentro do volume, o catálogo de colunas das visões do schema `cerebro` (
 ### 7. Teste de fumaça
 Pergunte: "Quantos negócios foram criados por mês neste ano?" e "Quais são as origens de contatos com mais volume?". O Cérebro deve citar a tabela e o período. Peça um telefone ou o texto de uma conversa: ele deve recusar (política de privacidade + visões sem essas colunas).
 
+## Rodar localmente (sem Docker)
+Perfis em `bright-minds/local/`: **demo** (Postgres local descartável com dados fictícios) e **staging** (o CRM recém-migrado, por túnel SSH).
+Requisitos: `bun` no PATH, `uv` e Docker. Uma vez:
+```bash
+cd bright-minds/local
+uv venv --python 3.13 .venv && uv pip install --python .venv/bin/python -e "../../cli[postgres]" "psycopg[binary]" packaging
+bun install --ignore-scripts          # na raiz do repositório
+./build-frontend.sh                    # compila o frontend em apps/frontend/dist (contêiner Node 22)
+```
+**Demo:** `./demo-db.sh up && ./start.sh demo` → http://localhost:5005 (o primeiro usuário vira administrador).
+
+**Staging (banco real migrado):**
+1. [SERVIDOR] `bash ~/bright-minds/scripts/create-readonly-role.sh` e anote `CRM_DB_PASSWORD` e o container do banco.
+2. [SERVIDOR] IP do container na rede do Supabase: `docker inspect <container-do-banco> --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}} {{$v.IPAddress}}{{"\n"}}{{end}}'`
+3. [LOCAL] túnel (deixe aberto): `ssh -N -L 55433:<IP>:5432 root@<servidor>`
+4. [LOCAL] preencha `bright-minds/local/.env.staging` (`CRM_DB_PASSWORD` e a chave do LLM) e rode `./start.sh staging sync`.
+Parar: `./start.sh stop`. Logs em `bright-minds/local/run-<perfil>/`. Os arquivos `.env.*` e `run-*` não são versionados.
+
 ## Segurança e LGPD
 - **Banco nunca exposto**: o `nao` entra na rede Docker do Supabase; nenhuma porta do Postgres é publicada.
 - **Usuário `cerebro_ro`**: leitura apenas do schema `cerebro`; `default_transaction_read_only`, timeout de 30 s, no máximo 5 conexões, sem acesso a `public`, `auth` ou `storage`.
