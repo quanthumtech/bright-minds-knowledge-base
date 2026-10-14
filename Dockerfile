@@ -44,6 +44,9 @@ FROM python:3.12-slim AS python-builder
 # are rewritten so the installed nao-core package reports this version.
 ARG NAO_CLI_VERSION=
 
+# Extras do nao-core instalados na imagem (padrão: tudo). O deploy da Bright Minds usa um conjunto enxuto.
+ARG NAO_EXTRAS=all
+
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -67,7 +70,7 @@ RUN if [ -n "$NAO_CLI_VERSION" ]; then \
     fi
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install --system '.[all]'
+    uv pip install --system ".[${NAO_EXTRAS}]" packaging
 
 # =============================================================================
 # STAGE 5: Runtime image
