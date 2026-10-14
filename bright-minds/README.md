@@ -58,7 +58,7 @@ Use como `SUPABASE_NETWORK` a rede do stack do Supabase (ex.: `bright-minds-supa
 1. **Create Service → Compose** → Provider **Git** (o repositório do passo 1), branch `main`, **Compose Path** `./docker-compose.dokploy.yml`.
 2. **Environment**: cole o conteúdo de `.env.dokploy.example` preenchido (`BETTER_AUTH_SECRET` com `openssl rand -base64 32`, `NAO_DB_PASSWORD` com `openssl rand -hex 16`, a chave do LLM e os valores do passo 2/3).
 3. **Domains**: serviço `nao`, porta `5005`, HTTPS (Let's Encrypt). `BETTER_AUTH_URL` precisa ser exatamente essa URL.
-4. **Deploy**. O primeiro build demora (imagem do nao com Chromium e dependências Python).
+4. **Deploy**. A imagem é construída no GitHub (aba Actions → `build-image`, ~10 min) e o Dokploy só a baixa. Faça o Deploy depois que o workflow terminar. Pacote privado: no servidor, `docker login ghcr.io -u <usuario>` com um token com `read:packages`; ou torne o pacote público em GitHub → Packages → Package settings.
 
 ### 5. Primeiro acesso
 Abra a URL e crie o primeiro usuário (vira administrador). O cadastro livre fica desligado (`ENABLE_USER_SIGNUP=false`); convide os demais pelas configurações.

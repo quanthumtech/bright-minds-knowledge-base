@@ -2,6 +2,8 @@
 #   Dokploy: Create Service → Compose → Git → branch main → Compose Path: ./docker-compose.dokploy.yml
 #   Environment: copie .env.dokploy.example e preencha. Passo a passo: bright-minds/README.md
 #
+# - A imagem é construída no GitHub (.github/workflows/build-image.yml) e só baixada aqui: construir
+#   o nao no servidor (Chromium, Bun, Python) esgota a memória e derruba o Supabase.
 # - Sem `ports`: o domínio do Dokploy (Traefik) aponta para o serviço `nao`, porta 5005.
 # - O banco do CRM (Supabase auto-hospedado) NÃO é exposto na internet: o `nao` entra na rede Docker
 #   do Supabase (SUPABASE_NETWORK) e conecta no container do banco pelo nome interno, com o usuário
@@ -24,10 +26,8 @@ services:
             retries: 10
 
     nao:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        image: bright-minds-knowledge-base
+        image: ghcr.io/quanthumtech/bright-minds-knowledge-base:latest
+        pull_policy: always
         restart: unless-stopped
         entrypoint: ['bash', '/bm/entrypoint.sh']
         environment:
